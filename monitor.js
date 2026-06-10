@@ -70,6 +70,12 @@ function postSlack(ok, steps, durationMs, errMsg, shotPath) {
     page = await browser.newPage({ viewport: { width: 1366, height: 1000 } });
     page.setDefaultTimeout(30000);
 
+    // Manual test hook: trigger the workflow with force_fail=true to verify the Slack alert path.
+    if (process.env.FORCE_FAIL === 'true') {
+      await page.goto(CFG.homeUrl, { waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => {});
+      throw new Error('Forced test failure (FORCE_FAIL=true) — verifying the alert path, not a real outage.');
+    }
+
     // 1) Home loads
     let s = Date.now();
     await page.goto(CFG.homeUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
