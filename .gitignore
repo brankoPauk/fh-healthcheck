@@ -1,0 +1,5 @@
+node_modules/
+ms-playwright/
+screenshots/
+*.log
+config.json.bak

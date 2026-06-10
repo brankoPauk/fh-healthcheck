@@ -1,0 +1,46 @@
+name: FormationHub Monitor
+
+# Runs the synthetic checkout health check every 15 minutes, in the cloud.
+# Independent of any laptop. Posts to Slack (via secret) only when the check fails.
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 min (UTC). GitHub may delay/skip under load.
+  workflow_dispatch: {}        # allows manual "Run workflow" from the Actions tab
+
+# Avoid overlapping runs if one is slow.
+concurrency:
+  group: formationhub-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Playwright Chromium (with OS deps)
+        run: npx playwright install --with-deps chromium
+
+      - name: Run health check
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: node monitor.js
+
+      - name: Upload failure screenshot (only on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots
+          path: screenshots/
+          if-no-files-found: ignore
+          retention-days: 7

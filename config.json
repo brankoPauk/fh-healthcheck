@@ -1,0 +1,20 @@
+{
+  "homeUrl": "https://www.formationhub.com/",
+  "state": "Delaware",
+  "notifyOn": "failure",
+  "slackWebhookUrl": "",
+  "siteName": "FormationHub LLC funnel",
+  "testData": {
+    "businessNamePrefix": "ZZ MONITORING TEST - DO NOT PROCESS",
+    "firstName": "QA",
+    "lastName": "Monitor",
+    "title": "Owner",
+    "email": "qa-monitor@example.com",
+    "phone": "(202) 555-0143",
+    "street": "123 Market Street",
+    "city": "Wilmington",
+    "repState": "Delaware",
+    "zip": "19801",
+    "activityIndex": 3
+  }
+}
