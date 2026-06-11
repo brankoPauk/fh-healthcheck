@@ -3,6 +3,13 @@ name: FormationHub Monitor
 # Runs the synthetic checkout health check every 15 minutes, in the cloud.
 # Independent of any laptop. Posts to Slack (via secret) only when the check fails.
 on:
+  # PRIMARY trigger: an external cron service (e.g. cron-job.org) calls the GitHub
+  # "dispatches" API every 15 min with event_type "run-check". GitHub's own `schedule`
+  # cron is throttled/dropped heavily on low-traffic repos, so we don't rely on it.
+  repository_dispatch:
+    types: [run-check]
+  # FALLBACK trigger: GitHub's built-in cron. Best-effort only — keep it as a safety net
+  # in case the external service is down. Real cadence comes from repository_dispatch.
   schedule:
     - cron: "*/15 * * * *"   # every 15 min (UTC). GitHub may delay/skip under load.
   workflow_dispatch:           # allows manual "Run workflow" from the Actions tab
